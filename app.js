@@ -25,6 +25,8 @@ app.get( '/api/init', function( req, res ){
   var id = uuidv1();
   var found = false;
   var length = 4;
+  var highlow = false;
+
   if( req.query.length ){
     var l = req.query.length;
     if( typeof l == "string" ){
@@ -35,22 +37,32 @@ app.get( '/api/init', function( req, res ){
       }
     }
   }
+  if( req.query.highlow ){
+    var h = req.query.highlow;
+    if( typeof h == "string" ){
+      try{
+        h = parseInt( h );
+        if( h ){ highlow = true; }
+      }catch( e ){
+      }
+    }
+  }
 
-  if( length > 9 ){
+  if( length > 9 || length < 2 ){
     res.status( 400 )
-    res.write( JSON.stringify( { status: false, error: 'Parameter length should be less than 10.' }, null, 2 ) );
+    res.write( JSON.stringify( { status: false, error: 'Parameter length should be more than 1 and less than 10.' }, null, 2 ) );
     res.end();
   }else{
     do{
       if( getGame( id ) ){
         id = uuidv1();
       }else{
-        setGame( id, { count: 0, length: length, value: generateDigit( length ), created: ( new Date() ).getTime() } );
+        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), created: ( new Date() ).getTime() } );
         found = true;
       }
     }while( !found );
 
-    res.write( JSON.stringify( { status: true, id: id, message: "Check your guess with 'GET /api/check?id=" + id + "&value=NNNN'" }, null, 2 ) );
+    res.write( JSON.stringify( { status: true, id: id, highlow: highlow, length: length, message: "Check your guess with 'GET /api/check?id=" + id + "&value=NNNN'" }, null, 2 ) );
     res.end();
   }
 });
@@ -86,6 +98,16 @@ app.get( '/api/check', function( req, res ){
       setGame( id, game );
 
       var json = { status: true, id: id, length: game.length, value: value, hit: result[0], error: result[1] };
+      if( game.highlow ){
+        if( game.value > value ){
+          json.highlow = 'low';
+        }else if( game.value < value ){
+          json.highlow = 'high';
+        }else{
+          json.highlow = 'equal';
+        }
+      }
+
       if( result[0] == game.length ){
         game.solved = true;
         setGame( id, game );
