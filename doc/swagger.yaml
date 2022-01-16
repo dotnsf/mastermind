@@ -39,6 +39,10 @@ paths:
           type: integer
           in: query
           description: 数値桁数（デフォルト=4）
+        - name: highlow
+          type: integer
+          in: query
+          description: チェック時の返答に High or Low を加える（デフォルト=0）
       responses:
         '200':
           description: 成功
