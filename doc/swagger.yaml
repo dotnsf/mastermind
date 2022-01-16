@@ -1,0 +1,82 @@
+swagger: '2.0'
+info:
+  description: MasterMind REST API ドキュメント
+  version: 0.0.1
+  title: MasterMind REST APIs
+host: dotnsf-mastermind.herokuapp.com
+basePath: /api
+tags:
+  - name: mastermind
+    description: MasterMind API
+schemes:
+  - http
+  - https
+paths:
+  /ping:
+    get:
+      tags:
+        - mastermind
+      summary: ping
+      description: ping
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
+  /init:
+    get:
+      tags:
+        - mastermind
+      summary: 初期化
+      description: 初期化
+      produces:
+        - application/json
+      parameters:
+        - name: length
+          type: integer
+          in: query
+          description: 数値桁数（デフォルト=4）
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
+  /check:
+    get:
+      tags:
+        - mastermind
+      summary: 確認
+      description: 確認
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          type: string
+          in: query
+          description: 初期化時に取得した id
+          required: true
+        - name: value
+          type: string
+          in: query
+          description: 推測した数値文字列
+          required: true
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
+  /status:
+    get:
+      tags:
+        - mastermind
+      summary: ステータス参照
+      description: ステータス参照
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
