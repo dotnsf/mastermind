@@ -68,8 +68,8 @@ app.get( '/api/check', function( req, res ){
       game.updated = ( new Date() ).getTime();
       setGame( id, game );
 
-      var json = { status: true, id: id, value: value, hit: result[0], error: result[1] };
-      if( result[0] == 4 ){
+      var json = { status: true, id: id, length: game.length, value: value, hit: result[0], error: result[1] };
+      if( result[0] == game.length ){
         game.finished = true;
         setGame( id, game );
         json.message = "Congrats!";
@@ -86,7 +86,10 @@ app.get( '/api/status', function( req, res ){
   var json = JSON.parse( JSON.stringify( gameids ) );
   Object.keys( json ).forEach( function( id ){
     if( json[id] && !json[id].finished ){
-      json[id].value = "****";
+      json[id].value = "";
+      for( var i = 0; i < json[id].length; i ++ ){
+        json[id].value += "*";
+      }
     }
   });
   res.write( JSON.stringify( { status: true, gameids: json }, null, 2 ) );
