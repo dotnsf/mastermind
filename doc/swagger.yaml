@@ -3,7 +3,8 @@ info:
   description: MasterMind REST API ドキュメント
   version: 0.0.1
   title: MasterMind REST APIs
-host: dotnsf-mastermind.herokuapp.com
+#host: dotnsf-mastermind.herokuapp.com
+host: localhost:8080
 basePath: /api
 tags:
   - name: mastermind
@@ -17,7 +18,7 @@ paths:
       tags:
         - mastermind
       summary: ping
-      description: ping
+      description: サーバーの死活監視用
       produces:
         - application/json
       responses:
@@ -30,7 +31,7 @@ paths:
       tags:
         - mastermind
       summary: 初期化
-      description: 初期化
+      description: ゲーム初期化
       produces:
         - application/json
       parameters:
@@ -48,7 +49,7 @@ paths:
       tags:
         - mastermind
       summary: 確認
-      description: 確認
+      description: 推測値に対する結果確認
       produces:
         - application/json
       parameters:
