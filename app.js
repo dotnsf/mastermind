@@ -24,18 +24,35 @@ app.get( '/api/init', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var id = uuidv1();
   var found = false;
-  var length = ( req.query.length ? parseInt( req.query.length ) : 4 );
-  do{
-    if( getGame( id ) ){
-      id = uuidv1();
-    }else{
-      setGame( id, { count: 0, length: length, value: generateDigit( length ), created: ( new Date() ).getTime() } );
-      found = true;
+  var length = 4;
+  if( req.query.length ){
+    var l = req.query.length;
+    if( typeof l == "string" ){
+      try{
+        l = parseInt( l );
+        if( l ){ length = l; }
+      }catch( e ){
+      }
     }
-  }while( !found );
+  }
 
-  res.write( JSON.stringify( { status: true, id: id, message: "Check your guess with 'GET /api/check?id=" + id + "&value=NNNN'" }, null, 2 ) );
-  res.end();
+  if( length > 9 ){
+    res.status( 400 )
+    res.write( JSON.stringify( { status: false, error: 'Parameter length should be less than 10.' }, null, 2 ) );
+    res.end();
+  }else{
+    do{
+      if( getGame( id ) ){
+        id = uuidv1();
+      }else{
+        setGame( id, { count: 0, length: length, value: generateDigit( length ), created: ( new Date() ).getTime() } );
+        found = true;
+      }
+    }while( !found );
+
+    res.write( JSON.stringify( { status: true, id: id, message: "Check your guess with 'GET /api/check?id=" + id + "&value=NNNN'" }, null, 2 ) );
+    res.end();
+  }
 });
 
 app.get( '/api/check', function( req, res ){
@@ -58,9 +75,9 @@ app.get( '/api/check', function( req, res ){
     res.end();
   }else{
     var game = getGame( id );
-    if( game.finished ){
+    if( game.solved ){
       res.status( 400 )
-      res.write( JSON.stringify( { status: false, error: 'Already finished.' }, null, 2 ) );
+      res.write( JSON.stringify( { status: false, error: 'Already solved.' }, null, 2 ) );
       res.end();
     }else{
       var result = checkAnswer( game, value );
@@ -70,7 +87,7 @@ app.get( '/api/check', function( req, res ){
 
       var json = { status: true, id: id, length: game.length, value: value, hit: result[0], error: result[1] };
       if( result[0] == game.length ){
-        game.finished = true;
+        game.solved = true;
         setGame( id, game );
         json.message = "Congrats!";
       }
@@ -85,7 +102,7 @@ app.get( '/api/status', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var json = JSON.parse( JSON.stringify( gameids ) );
   Object.keys( json ).forEach( function( id ){
-    if( json[id] && !json[id].finished ){
+    if( json[id] && !json[id].solved ){
       json[id].value = "";
       for( var i = 0; i < json[id].length; i ++ ){
         json[id].value += "*";
