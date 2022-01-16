@@ -10,7 +10,7 @@ var gameids = {};
 
 app.get( '/', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
-  res.write( JSON.stringify( { status: true, message: "Try 'GET /api/init' to start master mind game." }, null, 2 ) );
+  res.write( JSON.stringify( { status: true, message: "Try 'GET /doc' for online API document." }, null, 2 ) );
   res.end();
 });
 
