@@ -7,8 +7,10 @@ info:
 host: localhost:8080
 basePath: /api
 tags:
-  - name: mastermind
-    description: MasterMind API
+  - name: play
+    description: MasterMind API for Playing
+  - name: admin
+    description: MasterMind API for Admin
 schemes:
   - http
   - https
@@ -16,7 +18,7 @@ paths:
   /ping:
     get:
       tags:
-        - mastermind
+        - admin
       summary: ping
       description: サーバーの死活監視用
       produces:
@@ -29,7 +31,7 @@ paths:
   /init:
     get:
       tags:
-        - mastermind
+        - play
       summary: 初期化
       description: ゲーム初期化
       produces:
@@ -51,7 +53,7 @@ paths:
   /check:
     get:
       tags:
-        - mastermind
+        - play
       summary: 確認
       description: 推測値に対する結果確認
       produces:
@@ -72,14 +74,37 @@ paths:
           description: 成功
         '400':
           description: エラー
+  /giveup:
+    get:
+      tags:
+        - play
+      summary: ギブアップ
+      description: ギブアップ
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          type: string
+          in: query
+          description: 初期化時に取得した id
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
   /status:
     get:
       tags:
-        - mastermind
+        - admin
       summary: ステータス参照
       description: ステータス参照
       produces:
         - application/json
+      parameters:
+        - name: id
+          type: string
+          in: query
+          description: 初期化時に取得した id
       responses:
         '200':
           description: 成功
