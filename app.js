@@ -57,7 +57,7 @@ app.get( '/api/init', function( req, res ){
       if( getGame( id ) ){
         id = uuidv1();
       }else{
-        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), created: ( new Date() ).getTime() } );
+        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), histories: [], created: ( new Date() ).getTime() } );
         found = true;
       }
     }while( !found );
@@ -91,30 +91,64 @@ app.get( '/api/check', function( req, res ){
       res.status( 400 )
       res.write( JSON.stringify( { status: false, error: 'Already solved.' }, null, 2 ) );
       res.end();
+    }else if( game.giveup ){
+      res.status( 400 )
+      res.write( JSON.stringify( { status: false, error: 'Already gave up.' }, null, 2 ) );
+      res.end();
     }else{
       var result = checkAnswer( game, value );
       game.count ++;
       game.updated = ( new Date() ).getTime();
-      setGame( id, game );
+
+      var history = { value: value, timestamp: game.updated, hit: result[0], error: result[1] };
 
       var json = { status: true, id: id, length: game.length, value: value, hit: result[0], error: result[1] };
       if( game.highlow ){
         if( game.value > value ){
           json.highlow = 'low';
+          history.highlow = 'low';
         }else if( game.value < value ){
           json.highlow = 'high';
+          history.highlow = 'high';
         }else{
           json.highlow = 'equal';
+          history.highlow = 'equal';
         }
       }
 
       if( result[0] == game.length ){
         game.solved = true;
-        setGame( id, game );
         json.message = "Congrats!";
       }
 
+      game.histories.push( history );
+      setGame( id, game );
+
       res.write( JSON.stringify( json, null, 2 ) );
+      res.end();
+    }
+  }
+});
+
+app.get( '/api/giveup', function( req, res ){
+  res.contentType( 'application/json; charset=utf-8' );
+  var id = req.query.id;
+
+  if( !id ){
+    res.status( 400 )
+    res.write( JSON.stringify( { status: false, error: 'Parameter id needed.' }, null, 2 ) );
+    res.end();
+  }else{
+    var game = getGame( id );
+    if( game.solved ){
+      res.status( 400 )
+      res.write( JSON.stringify( { status: false, error: 'Already solved.' }, null, 2 ) );
+      res.end();
+    }else{
+      game.giveup = true;
+      setGame( id, game );
+
+      res.write( JSON.stringify( game, null, 2 ) );
       res.end();
     }
   }
@@ -124,15 +158,28 @@ app.get( '/api/status', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var json = JSON.parse( JSON.stringify( gameids ) );
   Object.keys( json ).forEach( function( id ){
-    if( json[id] && !json[id].solved ){
+    if( json[id] && !json[id].solved && !json[id].giveup ){
       json[id].value = "";
       for( var i = 0; i < json[id].length; i ++ ){
         json[id].value += "*";
       }
     }
   });
-  res.write( JSON.stringify( { status: true, gameids: json }, null, 2 ) );
-  res.end();
+
+  var id = req.query.id;
+  if( !id ){
+    res.write( JSON.stringify( { status: true, games: json }, null, 2 ) );
+    res.end();
+  }else{
+    if( json[id] ){
+      res.write( JSON.stringify( { status: true, game: json[id] }, null, 2 ) );
+      res.end();
+    }else{
+      res.status( 404 )
+      res.write( JSON.stringify( { status: false, error: 'Not found.' }, null, 2 ) );
+      res.end();
+    }
+  }
 });
 
 app.post( '/api/reset', function( req, res ){
