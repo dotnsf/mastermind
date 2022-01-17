@@ -29,7 +29,11 @@ https://dotnsf-mastermind.herokuapp.com/
 
 - `GET /api/giveup?id=xxxx`
 
-  - ゲームid=xxxx をギブアップ
+  - ゲームid=xxxx に対してギブアップ宣言
+
+- `GET /api/status?id=xxxx`
+
+  - ゲームid=xxxx に対する過去回答履歴を含める状況確認
 
 
 ## Licensing
