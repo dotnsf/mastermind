@@ -27,6 +27,9 @@ app.get( '/api/init', function( req, res ){
   var length = 4;
   var highlow = false;
 
+  //. #3, #4 ユーザー情報を格納する場合はここ
+  var info = req.query;
+
   if( req.query.length ){
     var l = req.query.length;
     if( typeof l == "string" ){
@@ -57,7 +60,7 @@ app.get( '/api/init', function( req, res ){
       if( getGame( id ) ){
         id = uuidv1();
       }else{
-        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), histories: [], created: ( new Date() ).getTime() } );
+        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), histories: [], info: info, created: ( new Date() ).getTime() } );
         found = true;
       }
     }while( !found );
