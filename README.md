@@ -16,6 +16,14 @@ REST API 対応マスターマインド
 
   - ゲームid=xxxx に対して推測した yyyy の結果をチェック
 
+- `GET /api/status?id=xxxx`
+
+  - ゲームid=xxxx に対する過去回答履歴を含める状況確認
+
+- `GET /api/giveup?id=xxxx`
+
+  - ゲームid=xxxx に対してギブアップ宣言
+
 
 ## Licensing
 
