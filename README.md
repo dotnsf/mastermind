@@ -11,6 +11,15 @@ REST API 対応マスターマインド
 https://dotnsf-mastermind.herokuapp.com/
 
 
+## How to run
+
+- `$ npm install`
+
+- `$ node app`
+
+    - 管理用パスワードを指定する場合は `$ ADMIN_PASSWORD=password node app`
+
+
 ## How to play
 
 - `GET /api/init`

@@ -5,6 +5,9 @@ var express = require( 'express' ),
 
 app.use( express.static( __dirname + '/public' ) );
 
+//. #5
+var settings_admin_password = 'ADMIN_PASSWORD' in process.env ? process.env.ADMIN_PASSWORD : ''; 
+
 //. No Persistency
 var gameids = {};
 
@@ -160,21 +163,26 @@ app.get( '/api/giveup', function( req, res ){
 app.get( '/api/status', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var json = JSON.parse( JSON.stringify( gameids ) );
-  Object.keys( json ).forEach( function( id ){
-    if( json[id] && !json[id].solved && !json[id].giveup ){
-      json[id].value = "";
-      for( var i = 0; i < json[id].length; i ++ ){
-        json[id].value += "*";
-      }
-    }
-  });
 
   var id = req.query.id;
   if( !id ){
-    res.write( JSON.stringify( { status: true, games: json }, null, 2 ) );
-    res.end();
+    var password = req.query.password;
+    if( password && password == settings_admin_password ){
+      res.write( JSON.stringify( { status: true, games: json }, null, 2 ) );
+      res.end();
+    }else{
+      res.status( 403 )
+      res.write( JSON.stringify( { status: false, error: 'Not allowed.' }, null, 2 ) );
+      res.end();
+    }
   }else{
     if( json[id] ){
+      if( !json[id].solved && !json[id].giveup ){
+        json[id].value = "";
+        for( var i = 0; i < json[id].length; i ++ ){
+          json[id].value += "*";
+        }
+      }
       res.write( JSON.stringify( { status: true, game: json[id] }, null, 2 ) );
       res.end();
     }else{
