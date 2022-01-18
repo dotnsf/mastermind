@@ -105,6 +105,10 @@ paths:
           type: string
           in: query
           description: 初期化時に取得した id
+        - name: password
+          type: string
+          in: query
+          description: 管理用パスワード（id パラメータ無しで実行する場合は必要）
       responses:
         '200':
           description: 成功
