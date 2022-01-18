@@ -50,11 +50,11 @@ paths:
           description: 成功
         '400':
           description: エラー
-  /check:
+  /guess:
     get:
       tags:
         - play
-      summary: 確認
+      summary: 推測
       description: 推測値に対する結果確認
       produces:
         - application/json

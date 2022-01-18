@@ -8,7 +8,7 @@ REST API 対応マスターマインド
 
 ## Online Service
 
-https://dotnsf-mastermind.herokuapp.com/
+https://mastermind-restapi.herokuapp.com/
 
 
 ## How to run
@@ -28,9 +28,9 @@ https://dotnsf-mastermind.herokuapp.com/
 
   - ゲーム初期化＆ゲームid取得
 
-- `GET /api/check?id=xxxx&value=yyyy`
+- `GET /api/guess?id=xxxx&value=yyyy`
 
-  - ゲームid=xxxx に対して推測した yyyy の結果をチェック
+  - ゲームid=xxxx に対して yyyy で推測した結果をチェック
 
     - 結果内の hit 数 = 位置も種類も推測と一致していた数
     - 結果内の error 数 = 位置は間違えているが、種類が一致していた数

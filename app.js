@@ -79,12 +79,12 @@ app.get( '/api/init', function( req, res ){
       }
     }while( !found );
 
-    res.write( JSON.stringify( { status: true, id: id, highlow: highlow, length: length, message: "Check your guess with 'GET /api/check?id=" + id + "&value=NNNN'" }, null, 2 ) );
+    res.write( JSON.stringify( { status: true, id: id, highlow: highlow, length: length, message: "Check your guess with 'GET /api/guess?id=" + id + "&value=NNNN'" }, null, 2 ) );
     res.end();
   }
 });
 
-app.get( '/api/check', function( req, res ){
+app.get( '/api/guess', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var id = req.query.id;
   var value = req.query.value;
