@@ -1,0 +1,35 @@
+<script type="text/javascript">
+  RED.nodes.registerType( 'mmNode', {
+    category: 'TestNodes',
+    color: '#A9E2F3',
+    defaults: {
+      type: { value: "check" },
+      value: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "file.png",
+    label: function () {
+      return this.name || "MasterMind";
+    }
+});
+</script>
+ 
+<script type="text/html" data-template-name="mmNode">
+  <div class="form-row">
+    <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+    <select id="node-input-type">
+    <option value="init">Init</option>
+    <option value="check" selected>Check</option>
+    <option value="status">Status</option>
+    <option value="giveup">Give Up</option>
+    </select>
+    <hr />
+    <label for="node-input-value"><i class="icon-tag"></i> Value</label>
+    <input type="text" id="node-input-value" placeholder="value"/>
+  </div>
+</script>
+ 
+<script type="text/html" data-help-name="mmNode">
+    <p>Master Mind Node</p>
+</script>

@@ -1,0 +1,32 @@
+{
+    "name": "node-red-contrib-dotnsf-mastermind",
+    "node-red": {
+        "nodes": {
+            "MasterMind": "mmNode.js"
+        }
+    },
+    "version": "0.1.0",
+    "description": "REST API mastermind",
+    "main": "mmNode.js",
+    "scripts": {},
+    "keywords": [
+        "node-red",
+        "mastermind"
+    ],
+    "author": {
+        "name": "K.Kimura",
+        "email": "dotnsf@gmail.com",
+        "url": "https:twitter.com/dotnsf"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "uuid": "^3.3.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnsf/mastermind/node-red-contrib-dotnsf-mastermind"
+    },
+    "engines": {
+        "node": "14.x"
+    }
+}
