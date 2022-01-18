@@ -46,6 +46,14 @@ https://dotnsf-mastermind.herokuapp.com/
 
   - ゲームid=xxxx に対する過去回答履歴を含める状況確認
 
+- `GET /api/status?password=xxxx`
+
+  - 起動時に指定したパスワードを再度指定して、全データの状況確認
+
+- `GET /api/reset?password=xxxx`
+
+  - 起動時に指定したパスワードを再度指定して、全データを強制リセットする
+
 
 ## Licensing
 

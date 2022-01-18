@@ -204,10 +204,19 @@ app.get( '/api/status', function( req, res ){
   }
 });
 
-app.post( '/api/reset', function( req, res ){
+app.get( '/api/reset', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
-  res.write( JSON.stringify( { status: true, message: "Not implemented yet." }, null, 2 ) );
-  res.end();
+
+  var password = req.query.password;
+  if( password && password == settings_admin_password ){
+    resetGame();
+    res.write( JSON.stringify( { status: true }, null, 2 ) );
+    res.end();
+  }else{
+    res.status( 403 )
+    res.write( JSON.stringify( { status: false, error: 'Not allowed.' }, null, 2 ) );
+    res.end();
+  }
 });
 
 
@@ -217,6 +226,11 @@ function getGame( id ){
 
 function setGame( id, game ){
   gameids[id] = game;
+  return true;
+}
+
+function resetGame(){
+  gameids = {};
   return true;
 }
 
