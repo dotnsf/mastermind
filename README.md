@@ -19,6 +19,8 @@ https://dotnsf-mastermind.herokuapp.com/
 
     - 管理用パスワードを指定する場合は `$ ADMIN_PASSWORD=password node app`
 
+    - CORS 許可オリジンを指定する場合は `$ CORS=https://dotnsf.github.io/aaa node app`
+
 
 ## How to play
 

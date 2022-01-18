@@ -7,9 +7,20 @@ app.use( express.static( __dirname + '/public' ) );
 
 //. #5
 var settings_admin_password = 'ADMIN_PASSWORD' in process.env ? process.env.ADMIN_PASSWORD : ''; 
+//. #6
+var settings_cors = 'CORS' in process.env ? process.env.CORS : '';
 
 //. No Persistency
 var gameids = {};
+
+//. #6
+app.all( '/*', function( req, res, next ){
+  if( settings_cors ){
+    res.setHeader( 'Access-Control-Allow-Origin', settings_cors );
+    res.setHeader( 'Vary', 'Origin' );
+  }
+  next();
+});
 
 app.get( '/', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
