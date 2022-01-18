@@ -114,3 +114,25 @@ paths:
           description: 成功
         '400':
           description: エラー
+        '403':
+          description: パスワードエラー
+  /reset:
+    get:
+      tags:
+        - admin
+      summary: 全データリセット
+      description: 全データリセット
+      produces:
+        - application/json
+      parameters:
+        - name: password
+          type: string
+          in: query
+          description: 管理用パスワード
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
+        '403':
+          description: パスワードエラー
