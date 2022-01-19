@@ -82,18 +82,22 @@ async function doGuess(){
             + '<td>' + value2 + '</td>'
             + '<td>' + hit2 + ' ヒット<br/>' + error2 + ' エラー</td>';
           if( highlow2 ){
-            tr += '<td>' + ( highlow2 != 'equal' ? 'Too ' + highlow2 : '' ) + '</td>';
+            tr += '<td>' + ( highlow2 != 'equal' ? 'Too ' + highlow2 : 'Bingo!' ) + '</td>';
           }
 
           tr += '<td>' + timestamp2datetime( timestamp2 ) + '</td>'
             + '</tr>';
           $('#histories_table_body').append( tr );
+          if( hit2 == length ){
+            $('#history_' + i ).css( 'background-color', '#8f8' );
+          }
         }
       }
 
       if( r1.message ){
         $('#display_div').html( value );
         var ms = r2.game.histories[r2.game.histories.length-1].timestamp - r2.game.histories[0].timestamp; 
+
         var disp_sec = Math.floor( ms / 100 ) / 10
         alert( r2.game.histories.length + '回（' + disp_sec +  '秒）で解けました！' );
 
@@ -105,6 +109,7 @@ async function doGuess(){
         $('#btn-guess').css( 'display', 'none' );
         $('#btn-giveup').css( 'display', 'none' );
         $('#btn-onemoregame').css( 'display', '' );
+
       }else{
         $('#btn-guess').css( 'display', '' );
         $('#btn-giveup').css( 'display', '' );
