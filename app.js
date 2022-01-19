@@ -17,7 +17,7 @@ var gameids = {};
 app.all( '/*', function( req, res, next ){
   if( settings_cors ){
     res.setHeader( 'Access-Control-Allow-Origin', settings_cors );
-    //res.setHeader( 'Vary', 'Origin' );
+    res.setHeader( 'Vary', 'Origin' );
   }
   next();
 });
