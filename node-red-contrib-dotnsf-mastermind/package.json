@@ -2,12 +2,12 @@
     "name": "node-red-contrib-dotnsf-mastermind",
     "node-red": {
         "nodes": {
-            "MasterMind": "mmNode.js"
+            "MasterMind": "MasterMindNode.js"
         }
     },
     "version": "0.1.0",
     "description": "REST API mastermind",
-    "main": "mmNode.js",
+    "main": "MasterMindNode.js",
     "scripts": {},
     "keywords": [
         "node-red",
@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "express": "^4.17.1",
-        "uuid": "^3.3.2"
+        "request": "^2.88.0"
     },
     "repository": {
         "type": "git",
