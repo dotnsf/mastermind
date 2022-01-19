@@ -86,6 +86,48 @@ async function mmStatus( id ){
   });
 }
 
+function mmValidate( g_value, h_value, h_hit, h_error, h_highlow ){
+  var result = true;
+
+  //. hit の validate
+  var cnt = 0;
+  for( var i = 0; i < g_value.length; i ++ ){
+    var c1 = g_value.charAt( i );
+    var c2 = h_value.charAt( i );
+    if( c1 == c2 ){
+      cnt ++;
+    }
+  }
+  result = ( cnt == h_hit );
+
+  //. error の validate
+  if( result ){
+    cnt = 0;
+    for( var i = 0; i < g_value.length; i ++ ){
+      var c1 = g_value.charAt( i );
+      var idx = h_value.indexOf( c1 );
+      if( idx > -1 && idx != i ){
+        cnt ++;
+      }
+    }
+    result = ( cnt == h_error );
+  }
+
+  //. highlow の validate
+  if( result && h_highlow ){
+    switch( h_highlow ){
+    case 'high':
+      result = ( g_value < h_value );
+      break;
+    case 'low':
+      result = ( g_value > h_value );
+      break;
+    }
+  }
+
+  return result;
+}
+
 function timestamp2datetime( ts ){
   if( ts ){
     var dt = new Date( ts );
