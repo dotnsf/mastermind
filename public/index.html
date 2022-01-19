@@ -19,7 +19,9 @@
 var id = null;
 var length = 4;
 var highlow = 0;
+var validation = 0;
 var count = 0;
+var histories = [];
 
 $(function(){
   $('#brand-title').html( 'MasterMind via <a target="_blank" href="' + base_url + '/doc">API</a>' );
@@ -33,14 +35,47 @@ $(function(){
 
         $('#select_length').attr( 'disabled', true );
         $('#select_highlow').attr( 'disabled', true );
+        $('#select_validation').attr( 'disabled', true );
         $('#guess_value').focus();
+
+        titleQuestions();
       }
     });
   });
+
+  $('#guess_value').keyup( function(){
+    if( validation ){
+      var text = $('#guess_value').val();
+      if( text && text.length == length ){
+        for( var i = 0; i < histories.length; i ++ ){
+          var h_value = histories[i].value;
+          var h_hit = histories[i].hit;
+          var h_error = histories[i].error;
+          var h_highlow = histories[i].highlow;
+          if( mmValidate( text, h_value, h_hit, h_error, h_highlow ) ){
+            $('#history_' + i ).css( 'background-color', '#cfc' );
+          }else{
+            $('#history_' + i ).css( 'background-color', '#fcc' );
+          }
+        }
+      }
+    }
+  });
 });
+
+function titleQuestions(){
+  var num = '';
+  for( var i = 0; i < length; i ++ ){
+    num += '?';
+  }
+  $('#display_div').html( num );
+}
 
 function doGameInit(){
   id = null;
+  length = parseInt( $('#select_length').val() );
+  highlow = parseInt( $('#select_highlow').val() );
+  validation = parseInt( $('#select_validation').val() );
   count = 0;
 }
 
@@ -55,7 +90,7 @@ async function doGuess(){
 
       if( r2 && r2.status && r2.game && r2.game.histories ){
         $('#histories_table_body').html( '' );
-        var histories = r2.game.histories;
+        histories = r2.game.histories;
         for( var i = 0; i < histories.length; i ++ ){
           var idx = i + 1;
           var value2 = histories[i].value;
@@ -64,7 +99,7 @@ async function doGuess(){
           var timestamp2 = histories[i].timestamp;
           var highlow2 = histories[i].highlow;
 
-          var tr = '<tr>'
+          var tr = '<tr id="history_' + i + '">'
             + '<td>' + idx + '</td>'
             + '<td>' + value2 + '</td>'
             + '<td>' + hit2 + ' ヒット<br/>' + error2 + ' エラー</td>';
@@ -83,6 +118,7 @@ async function doGuess(){
 
         $('#select_length').removeAttr( 'disabled' );
         $('#select_highlow').removeAttr( 'disabled' );
+        $('#select_validation').removeAttr( 'disabled' );
 
         $('#guess_value').css( 'display', 'none' );
         $('#btn-guess').css( 'display', 'none' );
@@ -110,17 +146,20 @@ async function doGiveup(){
 
     $('#select_length').removeAttr( 'disabled' );
     $('#select_highlow').removeAttr( 'disabled' );
+    $('#select_validation').removeAttr( 'disabled' );
   }
 }
 
 async function doOneMoreGame(){
   length = parseInt( $('#select_length').val() );
   highlow = parseInt( $('#select_highlow').val() );
+  validation = parseInt( $('#select_validation').val() );
 
-  $('#display_div').html( '????' );
+  titleQuestions();
 
   $('#select_length').attr( 'disabled', true );
   $('#select_highlow').attr( 'disabled', true );
+  $('#select_validation').attr( 'disabled', true );
 
   $('#guess_value').css( 'display', '' );
   $('#btn-guess').css( 'display', '' );
@@ -149,8 +188,9 @@ async function doOneMoreGame(){
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th>Length</th>
-          <th>High-Low</th>
+          <th>数値桁数</th>
+          <th>High-Low ヒント</th>
+          <th>Validation ヒント</th>
         </tr>
       </thead>
       <tbody>
@@ -169,8 +209,14 @@ async function doOneMoreGame(){
           </td>
           <td>
             <select id="select_highlow" disabled>
-              <option value="1">1</option>
-              <option value="0" selected>0</option>
+              <option value="0">無</option>
+              <option value="1" selected>有</option>
+            </select>
+          </td>
+          <td>
+            <select id="select_validation" disabled>
+              <option value="0">無</option>
+              <option value="1" selected>有</option>
             </select>
           </td>
         </tr>
