@@ -17,6 +17,11 @@ $(function(){
     obj = null;
   });
 
+  $('#input_form').submit( function(){
+    doGuess();
+    return false;
+  });
+
   $('#guess_value').keyup( function(){
     if( validation ){
       var text = $('#guess_value').val();
