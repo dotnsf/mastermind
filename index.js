@@ -10,11 +10,10 @@ $(function(){
   $('#brand-title').html( 'MasterMind via <a target="_blank" href="' + base_url + '/doc">API</a>' );
 
 	var obj = getBusyOverlay( 'viewport', { color:'black', opacity:0.5, text:'loading..', style:'text-decoration:blink;font-weight:bold;font-size:12px;color:white' } );
-  mmPing().then( function(){
-    doGameInit();
-
+  mmPing().then( function( result ){
     obj.remove();
     obj = null;
+    doGameInit();
   });
 
   $('#input_form').submit( function(){
@@ -163,5 +162,16 @@ async function doOneMoreGame(){
   var result = await mmInit( length, highlow );
   if( result && result.id ){
     id = result.id;
+  }else{
+    $('#select_length').removeAttr( 'disabled' );
+    $('#select_highlow').removeAttr( 'disabled' );
+    $('#select_validation').removeAttr( 'disabled' );
+
+    $('#guess_value').css( 'display', 'none' );
+    $('#btn-guess').css( 'display', 'none' );
+    $('#btn-giveup').css( 'display', 'none' );
+    $('#btn-onemoregame').css( 'display', 'none' );
+
+    alert( 'REST API サーバーとの通信でエラーが発生しました。' );
   }
 }
