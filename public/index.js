@@ -13,7 +13,12 @@ $(function(){
   mmPing().then( function( result ){
     obj.remove();
     obj = null;
-    doGameInit();
+
+    if( result ){
+      doGameInit();
+    }else{
+      disableGame( 'REST API サーバーとの通信でエラーが発生しました。' );
+    }
   });
 
   $('#input_form').submit( function(){
@@ -163,15 +168,19 @@ async function doOneMoreGame(){
   if( result && result.id ){
     id = result.id;
   }else{
-    $('#select_length').removeAttr( 'disabled' );
-    $('#select_highlow').removeAttr( 'disabled' );
-    $('#select_validation').removeAttr( 'disabled' );
-
-    $('#guess_value').css( 'display', 'none' );
-    $('#btn-guess').css( 'display', 'none' );
-    $('#btn-giveup').css( 'display', 'none' );
-    $('#btn-onemoregame').css( 'display', 'none' );
-
-    alert( 'REST API サーバーとの通信でエラーが発生しました。' );
+    disableGame( 'REST API サーバーとの通信でエラーが発生しました。' );
   }
+}
+
+function disableGame( message ){
+  $('#select_length').removeAttr( 'disabled' );
+  $('#select_highlow').removeAttr( 'disabled' );
+  $('#select_validation').removeAttr( 'disabled' );
+
+  $('#guess_value').css( 'display', 'none' );
+  $('#btn-guess').css( 'display', 'none' );
+  $('#btn-giveup').css( 'display', 'none' );
+  $('#btn-onemoregame').css( 'display', 'none' );
+
+  alert( message );
 }
