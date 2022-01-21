@@ -79,7 +79,12 @@ app.get( '/api/init', function( req, res ){
       }
     }while( !found );
 
-    res.write( JSON.stringify( { status: true, id: id, highlow: highlow, length: length, message: "Check your guess with 'GET /api/guess?id=" + id + "&value=NNNN'" }, null, 2 ) );
+    var NNNN = '';
+    for( var i = 0; i < length; i ++ ){
+      NNNN += 'N';
+    }
+
+    res.write( JSON.stringify( { status: true, id: id, highlow: highlow, length: length, message: "Check your guess with 'GET /api/guess?id=" + id + "&value=" + NNNN + "'" }, null, 2 ) );
     res.end();
   }
 });
