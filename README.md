@@ -8,7 +8,7 @@ REST API 対応マスターマインド
 
 ## Online Service
 
-https://mastermind-restapi.herokuapp.com/
+https://dotnsf.github.io/mastermind/
 
 
 ## How to run
