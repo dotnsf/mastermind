@@ -1,5 +1,6 @@
 
-var base_url = 'https://mastermind-restapi.herokuapp.com';
+//var base_url = 'https://mastermind-restapi.herokuapp.com';
+var base_url = 'http://localhost:8080';
 
 async function mmPing(){
   return new Promise( function( resolve, reject ){
@@ -18,11 +19,11 @@ async function mmPing(){
   });
 }
 
-async function mmInit( length = 4, highlow = 0 ){
+async function mmInit( length = 4, highlow = 0, name = '' ){
   return new Promise( function( resolve, reject ){
     $.ajax({
       type: "GET",
-      url: base_url + "/api/init?length=" + length + "&highlow=" + highlow,
+      url: base_url + "/api/init?length=" + length + "&highlow=" + highlow + "&name=" + name,
       success: function( result ){
         console.log( 'mmInit', result );
         resolve( result );
