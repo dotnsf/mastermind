@@ -1,6 +1,6 @@
 
-//var base_url = 'https://mastermind-restapi.herokuapp.com';
-var base_url = 'http://localhost:8080';
+var base_url = 'https://mastermind-restapi.herokuapp.com';
+//var base_url = 'http://localhost:8080';
 
 async function mmPing(){
   return new Promise( function( resolve, reject ){
