@@ -1,4 +1,4 @@
 exports.db_apikey = '';
-exports.db_host = '';
+exports.db_url = '';
 exports.db_name = 'mastermind';
 

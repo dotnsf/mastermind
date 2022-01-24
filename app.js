@@ -3,6 +3,8 @@ var express = require( 'express' ),
     uuidv1 = require( 'uuid/v1' ),
     app = express();
 
+var settings = require( './settings' );
+
 app.use( express.static( __dirname + '/public' ) );
 
 //. #5
@@ -12,6 +14,36 @@ var settings_cors = 'CORS' in process.env ? process.env.CORS : '';
 
 //. No Persistency
 var gameids = {};
+
+//. #3
+var client = null;
+var db_service_name = 'CLOUDANT';
+var settings_db_url = 'DB_URL' in process.env ? process.env.DB_URL : settings.db_url;
+var settings_db_apikey = 'DB_APIKEY' in process.env ? process.env.DB_APIKEY : settings.db_apikey;
+var settings_db_name = 'DB_NAME' in process.env ? process.env.DB_NAME : settings.db_name;
+
+//. env values
+process.env[db_service_name + '_AUTH_TYPE'] = 'IAM';
+if( !process.env[db_service_name + '_URL'] ){
+  process.env[db_service_name + '_URL'] = settings_db_url;
+}
+if( !process.env[db_service_name + '_APIKEY'] ){
+  process.env[db_service_name + '_APIKEY'] = settings_db_apikey;
+}
+
+//. DB
+var { CloudantV1 } = require( '@ibm-cloud/cloudant' );
+
+//. 環境変数 CLOUDANT_AUTH_TYPE を見て接続する
+var client = null;
+if( settings_db_apikey && settings_db_url && settings_db_name ){
+  client = CloudantV1.newInstance( { serviceName: db_service_name, disableSslVerification: true } );
+  client.putDatabase({
+    db: settings_db_name
+  }).catch( function( err ){
+    //console.log( err );
+  });
+}
 
 //. #6
 app.all( '/*', function( req, res, next ){
@@ -34,7 +66,7 @@ app.get( '/api/ping', function( req, res ){
   res.end();
 });
 
-app.get( '/api/init', function( req, res ){
+app.get( '/api/init', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var id = uuidv1();
   var found = false;
@@ -71,10 +103,10 @@ app.get( '/api/init', function( req, res ){
     res.end();
   }else{
     do{
-      if( getGame( id ) ){
+      if( await getGame( id ) ){
         id = uuidv1();
       }else{
-        setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), histories: [], info: info, created: ( new Date() ).getTime() } );
+        await setGame( id, { count: 0, highlow: highlow, length: length, value: generateDigit( length ), histories: [], info: info, created: ( new Date() ).getTime() } );
         found = true;
       }
     }while( !found );
@@ -89,7 +121,7 @@ app.get( '/api/init', function( req, res ){
   }
 });
 
-app.get( '/api/guess', function( req, res ){
+app.get( '/api/guess', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var id = req.query.id;
   var value = req.query.value;
@@ -99,7 +131,7 @@ app.get( '/api/guess', function( req, res ){
     res.status( 400 )
     res.write( JSON.stringify( { status: false, error: 'Both parameter id and value needed.' }, null, 2 ) );
     res.end();
-  }else if( !getGame( id ) ){
+  }else if( !( await getGame( id ) ) ){
     res.status( 400 )
     res.write( JSON.stringify( { status: false, error: 'No game information found for id "' + id + '".' }, null, 2 ) );
     res.end();
@@ -108,7 +140,7 @@ app.get( '/api/guess', function( req, res ){
     res.write( JSON.stringify( { status: false, error: 'Not valid format for value "' + value + '".' }, null, 2 ) );
     res.end();
   }else{
-    var game = getGame( id );
+    var game = await getGame( id );
     if( game.solved ){
       res.status( 400 )
       res.write( JSON.stringify( { status: false, error: 'Already solved.' }, null, 2 ) );
@@ -144,7 +176,7 @@ app.get( '/api/guess', function( req, res ){
       }
 
       game.histories.push( history );
-      setGame( id, game );
+      await setGame( id, game );
 
       res.write( JSON.stringify( json, null, 2 ) );
       res.end();
@@ -152,7 +184,7 @@ app.get( '/api/guess', function( req, res ){
   }
 });
 
-app.get( '/api/giveup', function( req, res ){
+app.get( '/api/giveup', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
   var id = req.query.id;
 
@@ -161,14 +193,14 @@ app.get( '/api/giveup', function( req, res ){
     res.write( JSON.stringify( { status: false, error: 'Parameter id needed.' }, null, 2 ) );
     res.end();
   }else{
-    var game = getGame( id );
+    var game = await getGame( id );
     if( game.solved ){
       res.status( 400 )
       res.write( JSON.stringify( { status: false, error: 'Already solved.' }, null, 2 ) );
       res.end();
     }else{
       game.giveup = true;
-      setGame( id, game );
+      await setGame( id, game );
 
       res.write( JSON.stringify( game, null, 2 ) );
       res.end();
@@ -176,9 +208,9 @@ app.get( '/api/giveup', function( req, res ){
   }
 });
 
-app.get( '/api/status', function( req, res ){
+app.get( '/api/status', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
-  var json = JSON.parse( JSON.stringify( gameids ) );
+  var json = await getGames();
 
   var id = req.query.id;
   if( !id ){
@@ -209,12 +241,12 @@ app.get( '/api/status', function( req, res ){
   }
 });
 
-app.get( '/api/reset', function( req, res ){
+app.get( '/api/reset', async function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
 
   var password = req.query.password;
   if( password && password == settings_admin_password ){
-    resetGame();
+    await resetGame();
     res.write( JSON.stringify( { status: true }, null, 2 ) );
     res.end();
   }else{
@@ -225,18 +257,89 @@ app.get( '/api/reset', function( req, res ){
 });
 
 
-function getGame( id ){
-  return gameids[id];
+async function getGame( id ){
+  return new Promise( ( resolve, reject ) => {
+    if( client ){
+      client.getDocument( { db: settings_db_name, docId: id, includeDocs: true } ).then( function( result ){
+        resolve( result.result );
+      }).catch( function( err ){
+        //console.log( err );
+        resolve( null );
+      });
+    }else{
+      resolve( gameids[id] );
+    }
+  });
 }
 
-function setGame( id, game ){
-  gameids[id] = game;
-  return true;
+async function getGames(){
+  return new Promise( ( resolve, reject ) => {
+    if( client ){
+      client.postAllDocs( { db: settings_db_name, includeDocs: true } ).then( function( result ){
+        if( result && result.result && result.result.rows ){
+          var games = {};
+          result.result.rows.forEach( function( row ){
+            games[row.doc._id] = row.doc;
+          });
+          resolve( games );
+        }else{
+          resolve( null );
+        }
+      }).catch( function( err ){
+        console.log( err );
+        resolve( null );
+      });
+    }else{
+      var json = JSON.parse( JSON.stringify( gameids ) );
+      resolve( json );
+    }
+  });
 }
 
-function resetGame(){
-  gameids = {};
-  return true;
+async function setGame( id, game ){
+  return new Promise( ( resolve, reject ) => {
+    if( client ){
+      game._id = id;
+      client.postDocument( { db: settings_db_name, document: game } ).then( function( result ){
+        resolve( result.result );
+      }).catch( function( err ){
+        console.log( err );
+        resolve( null );
+      });
+    }else{
+      gameids[id] = game;
+    }
+    resolve( true );
+  });
+}
+
+async function resetGame(){
+  return new Promise( ( resolve, reject ) => {
+    if( client ){
+      client.postAllDocs( { db: settings_db_name } ).then( function( result ){
+        if( result && result.result && result.result.rows ){
+          var docs = [];
+          result.result.rows.forEach( function( row ){
+            docs.push( { _id: row.id, _rev: row.value.rev, _deleted: true } );
+          });
+          client.postBulkDocs( { db: settings_db_name, bulkDocs: { docs: docs } } ).then( function( result ){
+            resolve( true );
+          }).catch( function( err ){
+            console.log( err );
+            resolve( null );
+          })
+        }else{
+          resolve( null );
+        }
+      }).catch( function( err ){
+        console.log( err );
+        resolve( null );
+      });
+    }else{
+      gameids = {};
+      resolve( true );
+    }
+  });
 }
 
 function generateDigit( n = 4 ){
@@ -253,8 +356,8 @@ function generateDigit( n = 4 ){
   return s;
 }
 
-function validateDigit( id, s ){
-  var game = getGame( id );
+async function validateDigit( id, s ){
+  var game = await getGame( id );
   if( !game || !s || !( typeof s == 'string' ) || !( s.length == game.length ) ){
     return false;
   }else{

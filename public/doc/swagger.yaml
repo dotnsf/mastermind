@@ -45,6 +45,10 @@ paths:
           type: integer
           in: query
           description: チェック時の返答に High or Low を加える（デフォルト=0）
+        - name: name
+          type: string
+          in: query
+          description: プレイヤー名（デフォルト=''）
       responses:
         '200':
           description: 成功

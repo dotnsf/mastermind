@@ -6,6 +6,8 @@ var validation = 0;
 var count = 0;
 var histories = [];
 
+var username = '(noname)';
+
 $(function(){
   $('#brand-title').html( 'MasterMind via <a target="_blank" href="' + base_url + '/doc">API</a>' );
 
@@ -58,12 +60,20 @@ function titleQuestions(){
   $('#display_div').html( num );
 }
 
+function askName(){
+  var _name = window.prompt( '名前を入力してください：' );
+  if( _name ){
+    username = _name;
+  }
+}
+
 function doGameInit(){
   id = null;
   length = parseInt( $('#select_length').val() );
   highlow = parseInt( $('#select_highlow').val() );
   validation = parseInt( $('#select_validation').val() );
   count = 0;
+  askName();
 }
 
 async function doGuess(){
@@ -164,7 +174,7 @@ async function doOneMoreGame(){
   $('#btn-onemoregame').css( 'display', 'none' );
   $('#guess_value').focus();
 
-  var result = await mmInit( length, highlow );
+  var result = await mmInit( length, highlow, username );
   if( result && result.id ){
     id = result.id;
   }else{
