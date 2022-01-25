@@ -55,6 +55,31 @@ https://dotnsf.github.io/mastermind/
   - 起動時に指定したパスワードを再度指定して、全データを強制リセットする
 
 
+## Environment Values
+
+- `CORS`
+
+  - Exception URL for CORS acccess. Default is ''(No CORS allowed).
+
+- `ADMIN_PASSWORD`
+
+  - Password to reset all data(`POST /api/reset`). Default is ''(No reset allowed).
+
+- `DB_URL` \*
+
+  - URL of Cloudant, if you want to store your data.
+
+- `DB_APIKEY` \*
+
+  - API key of your IBM Cloudant, if you want to store data.
+
+- `DB_NAME` \*
+
+  - Name of your database, if you want to store data.
+
+\* You need to set following all three values if you want to store data to IBM Cloudant DB.
+
+
 ## Licensing
 
 This code is licensed under MIT.
