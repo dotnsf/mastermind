@@ -120,6 +120,7 @@ async function doGuess(){
         var disp_sec = Math.floor( ms / 100 ) / 10
         alert( r2.game.histories.length + '回（' + disp_sec +  '秒）で解けました！' );
 
+        /*
         $('#select_length').removeAttr( 'disabled' );
         $('#select_highlow').removeAttr( 'disabled' );
         $('#select_validation').removeAttr( 'disabled' );
@@ -128,7 +129,8 @@ async function doGuess(){
         $('#btn-guess').css( 'display', 'none' );
         $('#btn-giveup').css( 'display', 'none' );
         $('#btn-onemoregame').css( 'display', '' );
-
+        */
+        window.location.href = "https://mastermind-restapi.herokuapp.com/api/share?id=" + id;
       }else{
         $('#btn-guess').css( 'display', '' );
         $('#btn-giveup').css( 'display', '' );
