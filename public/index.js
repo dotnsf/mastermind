@@ -145,6 +145,7 @@ async function doGiveup(){
   if( confirm( 'ギブアップしますか？' ) ){
     var r = await mmGiveup( id );
 
+    /*
     $('#display_div').html( r.value );
     $('#guess_value').css( 'display', 'none' );
     $('#btn-guess').css( 'display', 'none' );
@@ -154,6 +155,8 @@ async function doGiveup(){
     $('#select_length').removeAttr( 'disabled' );
     $('#select_highlow').removeAttr( 'disabled' );
     $('#select_validation').removeAttr( 'disabled' );
+    */
+    window.location.href = "https://mastermind-restapi.herokuapp.com/api/share?id=" + id;
   }
 }
 
