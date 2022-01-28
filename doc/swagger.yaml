@@ -140,3 +140,21 @@ paths:
           description: エラー
         '403':
           description: パスワードエラー
+  /image:
+    get:
+      tags:
+        - play
+      summary: 結果画像
+      description: 結果画像
+      produces:
+        - image/png
+      parameters:
+        - name: id
+          type: string
+          in: query
+          description: 初期化時に取得した id
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: エラー
