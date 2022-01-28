@@ -3,6 +3,14 @@ var express = require( 'express' ),
     uuidv1 = require( 'uuid/v1' ),
     app = express();
 
+//. #13
+var ejs = require( 'ejs' );
+app.set( 'views', __dirname + '/views' );
+app.set( 'view engine', 'ejs' );
+
+//. #14
+var { createCanvas } = require( 'canvas' );
+
 var settings = require( './settings' );
 
 app.use( express.static( __dirname + '/public' ) );
@@ -256,6 +264,101 @@ app.get( '/api/reset', async function( req, res ){
   }
 });
 
+//. #13
+app.get( '/api/share', async function( req, res ){
+  res.contentType( 'application/json; charset=utf-8' );
+  var id = req.query.id;
+
+  if( id ){
+    var json = await getGames();
+    if( json[id] ){
+      if( !json[id].solved && !json[id].giveup ){
+        res.status( 404 )
+        res.write( JSON.stringify( { status: false, error: 'Game is not solved/given-up yet.' }, null, 2 ) );
+        res.end();
+      }else{
+        //. シェア
+        res.contentType( 'text/html; charset=utf-8' );
+        res.render( 'share', { id: id, game: json[id] } );
+      }
+    }else{
+      res.status( 404 )
+      res.write( JSON.stringify( { status: false, error: 'Not found.' }, null, 2 ) );
+      res.end();
+    }
+  }else{
+    res.status( 404 )
+    res.write( JSON.stringify( { status: false, error: 'No id specified.' }, null, 2 ) );
+    res.end();
+  }
+});
+
+//. #14
+app.get( '/api/image', async function( req, res ){
+  res.contentType( 'application/json; charset=utf-8' );
+  var id = req.query.id;
+
+  if( id ){
+    var json = await getGames();
+    if( json[id] ){
+      if( !json[id].solved && !json[id].giveup ){
+        res.status( 404 )
+        res.write( JSON.stringify( { status: false, error: 'Game is not solved/given-up yet.' }, null, 2 ) );
+        res.end();
+      }else{
+        var length = json[id].length;
+        var value = json[id].value;
+        var highlow = json[id].highlow;
+        var histories = json[id].histories;
+        var updated = timestamp2datetime( parseInt( json[id].updated ) );
+        var name = ( json[id].info.name ? json[id].info.name : '(noname)' );
+        var result = ( json[id].solved ? 'Solved' : 'Gave up' );
+        
+        //. 画像化
+        res.contentType( 'image/png' );
+        var canvas = createCanvas( 300, 10 + 50 + 60 + 30 * histories.length + 30 + 30 + 10 );
+        var ctx = canvas.getContext( '2d' );
+
+        ctx.font = '30px';
+        ctx.fillText( value + ' ...' + result, 100, 50 );
+
+        ctx.fillText( 'Length:' + length, 100, 90 );
+        ctx.fillText( 'High-Low:' + highlow, 100, 120 );
+
+        for( var i = 0; i < histories.length; i ++ ){
+          var text = histories[i].value + ' -> ' + histories[i].hit + 'H ' + histories[i].error + 'E';
+          ctx.fillText( text, 100, 150 + 30 * i );
+        }
+
+        ctx.fillText( result + ' by ' + name + ' on ' + updated + '.', 100, 150 + 30 * histories.length );
+        ctx.fillText( 'MasterMind REST API', 100, 180 + 30 * histories.length );
+
+        /*
+        ctx.beginPath();
+        ctx.moveTo( 100, 100 );
+        ctx.lineTo( 200, 200 );
+        */
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+
+        var b64 = canvas.toDataURL().split( ',' )[1];
+        var buf = new Buffer.from( b64, 'base64' );
+
+        res.header( { 'Content-Disposition': 'inline' } );
+        res.end( buf, 'binary' );
+      }
+    }else{
+      res.status( 404 )
+      res.write( JSON.stringify( { status: false, error: 'Not found.' }, null, 2 ) );
+      res.end();
+    }
+  }else{
+    res.status( 404 )
+    res.write( JSON.stringify( { status: false, error: 'No id specified.' }, null, 2 ) );
+    res.end();
+  }
+});
+
 
 async function getGame( id ){
   return new Promise( ( resolve, reject ) => {
@@ -393,6 +496,23 @@ function checkAnswer( game, digits ){
   }
 
   return [ h , e ];
+}
+
+function timestamp2datetime( ts ){
+  if( ts ){
+    var dt = new Date( ts );
+    var yyyy = dt.getFullYear();
+    var mm = dt.getMonth() + 1;
+    var dd = dt.getDate();
+    var hh = dt.getHours();
+    var nn = dt.getMinutes();
+    var ss = dt.getSeconds();
+    var datetime = yyyy + '-' + ( mm < 10 ? '0' : '' ) + mm + '-' + ( dd < 10 ? '0' : '' ) + dd;
+//      + ' ' + ( hh < 10 ? '0' : '' ) + hh + ':' + ( nn < 10 ? '0' : '' ) + nn + ':' + ( ss < 10 ? '0' : '' ) + ss;
+    return datetime;
+  }else{
+    return "";
+  }
 }
 
 var port = process.env.PORT || 8080;

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3c.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta charset="utf8"/>
+<meta http-equiv="pragma" content="no-cache"/>
+<script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js"></script>
+<link href="../mmrestapi.css" rel="stylesheet"/>
+
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="MasterMind REST API - Shared result"/>
+
+<!-- // OGP tags -->
+<meta property="og:title" content="MasterMind REST API"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://mastermind-restapi.herokuapp.com/api/share?id=<%= id %>"/>
+<meta property="og:image" content="https://mastermind-restapi.herokuapp.com/api/image?id=<%= id %>"/>
+<meta property="og:site_name" content="MasterMind REST API"/>
+<meta property="og:description" content="MasterMind REST API : Result"/>
+<!-- OGP tags // -->
+
+<!-- // Twitter Card -->
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:site" content="@dotnsf"/>
+<meta property="twitter:creator" content="@dotnsf"/>
+<meta property="twitter:url" content="https://mastermind-restapi.herokuapp.com/api/share?id=<%= id %>"/>
+<meta property="twitter:image" content="https://mastermind-restapi.herokuapp.com/api/image?id=<%= id %>"/>
+<meta property="twitter:title" content="Mastermind REST API"/>
+<meta property="twitter:description" content="Mastermind REST API : Result"/>
+<!-- Twitter Card // -->
+
+<%
+function timestamp2datetime( ts ){
+  if( ts ){
+    var dt = new Date( ts );
+    var yyyy = dt.getFullYear();
+    var mm = dt.getMonth() + 1;
+    var dd = dt.getDate();
+    var hh = dt.getHours();
+    var nn = dt.getMinutes();
+    var ss = dt.getSeconds();
+    var datetime = yyyy + '-' + ( mm < 10 ? '0' : '' ) + mm + '-' + ( dd < 10 ? '0' : '' ) + dd
+      + ' ' + ( hh < 10 ? '0' : '' ) + hh + ':' + ( nn < 10 ? '0' : '' ) + nn + ':' + ( ss < 10 ? '0' : '' ) + ss;
+    return datetime;
+  }else{
+    return "";
+  }
+}
+%>
+
+<title>MasterMind via API</title>
+</head>
+<body>
+<!-- //action buttons -->
+<div style="text-align: right">
+  <ul class="nav navbar-nav">   
+   <li class="nav-item" id="share_buttons">
+      <!-- twitter -->
+      <a class="navlink" id="share_twitter" title="Twitter でシェア" href="https://twitter.com/share?url=https://mastermind-restapi.herokuapp.com/api/share?id=<%= id %>&text=%20&hashtags=mastermind" target="_blank">
+        <img src="../share_twitter.png"/>
+      </a>
+      <!-- facebook -->
+      <a class="navlink" id="share_facebook" title="facebook でシェア" href="https://www.facebook.com/share.php?u=https://mastermind-restapi.herokuapp.com/api/share?id=<%= id %>" onclick="window.open(this.href, 'FBwindow', 'width=650,height=450,menubar=no,toolbar=no,scrollbars=yes'); return false;">
+        <img src="../share_facebook.png"/>
+      </a>
+      <!-- line -->
+      <a class="navlink" id="share_line" title="LINE でシェア" href="https://social-plugins.line.me/lineit/share?url=https://mastermind-restapi.herokuapp.com/api/share?id=<%= id %>" onclick="window.open(this.href, 'Linewindow', 'width=650,height=450,menubar=no,toolbar=no,scrollbars=yes'); return false;">
+        <img src="../share_line.png"/>
+      </a>
+      <!-- Try -->
+      <a class="navlink btn btn-primary btn-xs" id="share_try" title="自分も挑戦する" href="https://dotnsf.github.io/mastermind/">
+        挑戦
+      </a>
+    </li>
+  </ul>
+</div>
+<!-- action buttons// -->
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a id="brand-title" class="navbar-brand" href="#">MasterMind via API</a>
+</nav>
+
+<div class="container" id="main_div" style="position: relative; top: 20px;">
+  <div id="display_div">
+    <%= game.value %> 
+  </div>
+  <div id="settings_div">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>数値桁数</th>
+          <th>High-Low ヒント</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <%= game.length %> 
+          </td>
+          <td>
+            <%= game.highlow %> 
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="histories_div">
+    <table class="table table-bordered" id="histories_table">
+      <tbody id="histories_table_body">
+<% for( var i = 0; i < game.histories.length; i ++ ){ %>
+        <tr class="history_" id="history_<%= i %>">
+          <td><%= i + 1 %></td>
+          <td><%= game.histories[i].value %></td>
+          <td><%= game.histories[i].hit %> ヒット<br/><%= game.histories[i].error %> エラー</td>
+  <% if( game.highlow ){ %>
+          <td><%= game.histories[i].highlow == 'equal' ? 'Bingo' : 'Too ' + game.histories[i].highlow %></td>
+  <% } %>
+          <td><%= timestamp2datetime( game.histories[i].timestamp ) %></td>
+        </tr>
+<% } %>
+      </tbody>
+    </table>
+  </div>
+  <div id="message_div" style="color: <%= game.solved ? '#080' : '#800' %>;">
+<% if( game.solved ){ %>
+    Solved 
+<% }else{ %>
+    Gave-up  
+<% } %>
+    at <%= timestamp2datetime( game.updated ) %>
+  </div>
+</div>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DWHL6D30BG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DWHL6D30BG');
+</script>
+
+</body>
+</html>
