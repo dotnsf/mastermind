@@ -121,7 +121,6 @@ function timestamp2datetime( ts ){
     <table class="table table-bordered" id="histories_table">
       <tbody id="histories_table_body">
 <% for( var i = 0; i < game.histories.length; i ++ ){ %>
-            $('#history_' + i ).css( 'background-color', '#8f8' );
         <tr class="history_" id="history_<%= i %>"<%= ( game.histories[i].highlow == 'equal' ? ' style="background-color: #8f8"' : '' ) %>>
           <td><%= i + 1 %></td>
           <td><%= game.histories[i].value %></td>
