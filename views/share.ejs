@@ -13,7 +13,7 @@ if( game.solved ){
   var sec = Math.floor( ( game.updated - game.created ) / 1000 );
   desc_msg = game.count + ' 回挑戦の末、' + sec + ' 秒でクリアしました！';
 }else if( game.giveup ){
-  desc_msg = 'ギブアップしました。。。';
+  desc_msg = 'ギブアップ%0Aしました。。。';
 }
 %>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
