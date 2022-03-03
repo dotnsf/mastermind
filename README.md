@@ -11,7 +11,7 @@ REST API 対応マスターマインド
 https://dotnsf.github.io/mastermind/
 
 
-## How to run
+## How to run app
 
 - `$ npm install`
 
@@ -22,7 +22,7 @@ https://dotnsf.github.io/mastermind/
     - CORS 許可オリジンを指定する場合は `$ CORS=https://dotnsf.github.io/aaa node app`
 
 
-## How to play
+## How to play app
 
 - `GET /api/init`
 
@@ -55,7 +55,7 @@ https://dotnsf.github.io/mastermind/
   - 起動時に指定したパスワードを再度指定して、全データを強制リセットする
 
 
-## Environment Values
+## Environment Values for app
 
 - `CORS`
 
@@ -78,6 +78,30 @@ https://dotnsf.github.io/mastermind/
   - Name of your database, if you want to store data.
 
 \* You need to set following all three values if you want to store data to IBM Cloudant DB.
+
+
+## How to run solver
+
+- `$ node solver/solver`
+
+
+## Environment Values for solver
+
+- `MASTERMIND_API_URL`
+
+  - Base URL of app server. Default is `https://mastermind-restapi.herokuapp.com/`.
+
+- `MASTERMIND_NAME`
+
+  - Name of player. Default is `(solver)`.
+
+- `MASTERMIND_LENGTH`
+
+  - Length of digit. Default is `4`.
+
+- `MASTERMIND_HIGHLOW`
+
+  - HIGHLOW setting of game. Default is `1 (on)`.
 
 
 ## Licensing
