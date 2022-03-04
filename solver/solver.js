@@ -201,6 +201,7 @@ async function main(){
       }
       console.log( line );
     }
+    console.log( '  => ' + mm_url + 'api/share?id=' + id );
   }
 }
 
