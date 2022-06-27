@@ -411,8 +411,8 @@ async function setGame( id, game ){
       });
     }else{
       gameids[id] = game;
+      resolve( true );
     }
-    resolve( true );
   });
 }
 
