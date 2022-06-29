@@ -130,7 +130,7 @@ async function doGuess(){
         $('#btn-giveup').css( 'display', 'none' );
         $('#btn-onemoregame').css( 'display', '' );
         */
-        window.location.href = "https://mastermind-restapi.herokuapp.com/api/share?id=" + id;
+        window.location.href = "https://mastermind-restapi.yellowmix.net/api/share?id=" + id;
       }else{
         $('#btn-guess').css( 'display', '' );
         $('#btn-giveup').css( 'display', '' );
@@ -156,7 +156,7 @@ async function doGiveup(){
     $('#select_highlow').removeAttr( 'disabled' );
     $('#select_validation').removeAttr( 'disabled' );
     */
-    window.location.href = "https://mastermind-restapi.herokuapp.com/api/share?id=" + id;
+    window.location.href = "https://mastermind-restapi.yellowmix.net/api/share?id=" + id;
   }
 }
 
